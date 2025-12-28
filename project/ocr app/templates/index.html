@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice OCR App</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2196F3;
+            --secondary-color: #4CAF50;
+            --background-color: #f8f9fa;
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .main-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 2rem 0;
+            background: linear-gradient(135deg, var(--primary-color), #1976D2);
+            color: white;
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 2rem;
+            transition: transform 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-body {
+            padding: 2rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #444;
+        }
+
+        .form-control {
+            border-radius: 8px;
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            transition: border-color 0.2s;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(33, 150, 243, 0.25);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #1976D2;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background-color: var(--secondary-color);
+            border: none;
+        }
+
+        .btn-success:hover {
+            background-color: #388E3C;
+            transform: translateY(-2px);
+        }
+
+        .loading {
+            display: none;
+            margin: 2rem 0;
+            text-align: center;
+            padding: 2rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+            color: var(--primary-color);
+        }
+
+        .progress {
+            height: 20px;
+            margin: 1rem 0;
+            border-radius: 10px;
+            background-color: #e9ecef;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            background-color: var(--primary-color);
+            transition: width 0.3s ease;
+            color: white;
+            text-align: center;
+            line-height: 20px;
+            font-weight: 500;
+        }
+
+        .progress-status {
+            margin-top: 0.5rem;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .result-container {
+            display: none;
+            margin-top: 2rem;
+        }
+
+        .result-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .result-card h4 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        pre {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 1rem;
+            max-height: 400px;
+            overflow-y: auto;
+            font-size: 0.9rem;
+        }
+
+        .file-upload-wrapper {
+            position: relative;
+            margin-bottom: 1rem;
+        }
+
+        .file-upload-input {
+            position: relative;
+            z-index: 1;
+            cursor: pointer;
+        }
+
+        .file-upload-text {
+            position: absolute;
+            top: 50%;
+            left: 1rem;
+            transform: translateY(-50%);
+            color: #666;
+            pointer-events: none;
+        }
+
+        .drag-drop-area {
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            background-color: #f8f9fa;
+            transition: all 0.3s;
+        }
+
+        .drag-drop-area:hover {
+            border-color: var(--primary-color);
+            background-color: #e3f2fd;
+        }
+
+        .drag-drop-area i {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .success-message {
+            display: none;
+            color: var(--secondary-color);
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                margin: 1rem auto;
+            }
+
+            .header {
+                padding: 1.5rem 0;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .card-body {
+                padding: 1.5rem;
+            }
+        }
+
+        .editable-field {
+            border: 1px solid #ccc;
+            padding: 5px;
+            margin: 2px 0;
+            border-radius: 4px;
+        }
+
+        .editable-field:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.25);
+        }
+
+        .edit-buttons {
+            margin-top: 10px;
+            display: none;
+        }
+
+        .edit-buttons.show {
+            display: flex;
+            gap: 10px;
+        }
+
+        .dropdown-menu {
+            max-height: 400px;
+            overflow-y: auto;
+            width: 300px;
+            padding: 0.5rem;
+        }
+
+        .dropdown-search {
+            position: sticky;
+            top: 0;
+            background: white;
+            padding: 0.5rem;
+            border-bottom: 1px solid #dee2e6;
+            z-index: 1;
+        }
+
+        .dropdown-search input {
+            width: 100%;
+            padding: 0.375rem 0.75rem;
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+        }
+
+        .dropdown-search-help {
+            font-size: 0.75rem;
+            color: #6c757d;
+            margin-top: 0.25rem;
+            padding: 0.25rem;
+            background-color: #f8f9fa;
+            border-radius: 0.25rem;
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .dropdown-search-help strong {
+            color: var(--primary-color);
+        }
+
+        .dropdown-search-help code {
+            background-color: #e9ecef;
+            padding: 0.125rem 0.25rem;
+            border-radius: 0.25rem;
+            font-family: monospace;
+            font-size: 0.875em;
+        }
+
+        .dropdown-group {
+            margin: 0.5rem 0;
+        }
+
+        .dropdown-group-header {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+            color: #6c757d;
+            font-weight: 600;
+            background-color: #f8f9fa;
+            border-radius: 0.25rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .dropdown-item {
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            margin: 0.125rem 0;
+            white-space: normal;
+            word-break: break-word;
+        }
+
+        .dropdown-item:hover {
+            background-color: #e9ecef;
+        }
+
+        .dropdown-item.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .dropdown-item .text-muted {
+            font-size: 0.75rem;
+            display: block;
+            margin-top: 0.25rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="header">
+            <h1><i class="fas fa-file-invoice"></i> Invoice OCR App</h1>
+            <p>Upload your invoice to extract information automatically</p>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <form id="uploadForm" enctype="multipart/form-data">
+                    <div class="drag-drop-area" id="dragDropArea">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <h4>Drag & Drop Your File Here</h4>
+                        <p>or</p>
+                        <div class="mb-3">
+                            <label for="invoiceFile" class="form-label visually-hidden">Upload Invoice File</label>
+                            <input type="file" class="form-control file-upload-input" id="invoiceFile" accept=".jpg,.jpeg,.png,.pdf" required>
+                        </div>
+                        <p class="text-muted">Supported formats: JPG, PNG, PDF</p>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100" title="Process the uploaded invoice">
+                        <i class="fas fa-cog"></i> Process Invoice
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="loading">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <div class="progress mt-3">
+                <div class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+            </div>
+            <div class="progress-status">Starting processing...</div>
+        </div>
+
+        <div class="result-container" id="resultContainer">
+            <div class="row">
+                <div class="col-12 mb-4">
+                    <div class="result-card">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0 text-primary"><i class="fas fa-file-invoice"></i> Invoice Preview</h5>
+                        </div>
+                        <div id="invoicePreview" class="text-center">
+                            <img id="previewImage" class="img-fluid" style="max-height: 500px; display: none;" alt="Invoice Preview">
+                            <iframe id="previewPdf" style="width: 100%; height: 500px; display: none;" frameborder="0"></iframe>
+                            <div id="noPreview" class="text-muted">
+                                <i class="fas fa-file-alt fa-3x mb-3"></i>
+                                <p>No preview available</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="result-card">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0 text-primary"><i class="fas fa-code"></i> SpaCy & Regex Model</h5>
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="editModelResults('spacyRegexResult', 'spacy_regex_model')" title="Edit SpaCy & Regex Model Results">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-success" onclick="downloadExcel('spacyRegexResult', 'spacy_regex_model')" title="Download SpaCy & Regex Model Results as Excel">
+                                    <i class="fas fa-file-excel"></i> Excel
+                                </button>
+                            </div>
+                        </div>
+                        <pre id="spacyRegexResult"></pre>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="result-card">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0 text-primary"><i class="fas fa-database"></i> Training Data Model</h5>
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="editModelResults('trainingDataResult', 'training_data_model')" title="Edit Training Data Model Results">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-success" onclick="downloadExcel('trainingDataResult', 'training_data_model')" title="Download Training Data Model Results as Excel">
+                                    <i class="fas fa-file-excel"></i> Excel
+                                </button>
+                            </div>
+                        </div>
+                        <pre id="trainingDataResult"></pre>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="result-card">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0 text-primary"><i class="fas fa-random"></i> Combined Model</h5>
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="editModelResults('combinedResult', 'combined_model')" title="Edit Combined Model Results">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-success" onclick="downloadExcel('combinedResult', 'combined_model')" title="Download Combined Model Results as Excel">
+                                    <i class="fas fa-file-excel"></i> Excel
+                                </button>
+                            </div>
+                        </div>
+                        <pre id="combinedResult"></pre>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="result-card">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0 text-primary"><i class="fas fa-file-alt"></i> Extracted Text</h5>
+                            <div>
+                                <button class="btn btn-sm btn-outline-secondary" onclick="downloadText('extractedText', 'extracted_text')" title="Download Extracted Text as TXT">
+                                    <i class="fas fa-file-alt"></i> TXT
+                                </button>
+                            </div>
+                        </div>
+                        <pre id="extractedText"></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Variable to store the current invoice ID
+        let currentInvoiceId = null;
+        let progressInterval = null;
+
+        function updateProgress(progress, status) {
+            const progressBar = document.querySelector('.progress-bar');
+            const progressStatus = document.querySelector('.progress-status');
+            
+            progressBar.style.width = `${progress}%`;
+            progressBar.setAttribute('aria-valuenow', progress);
+            progressBar.textContent = `${progress}%`;
+            progressStatus.textContent = status;
+        }
+
+        function startProgressSimulation() {
+            const loading = document.querySelector('.loading');
+            loading.style.display = 'block';
+            let progress = 0;
+            const stages = [
+                { progress: 20, status: 'Reading file...' },
+                { progress: 40, status: 'Extracting text...' },
+                { progress: 60, status: 'Processing with spaCy...' },
+                { progress: 80, status: 'Analyzing with training data...' },
+                { progress: 90, status: 'Combining results...' },
+                { progress: 95, status: 'Saving to database...' }
+            ];
+            let currentStage = 0;
+
+            progressInterval = setInterval(() => {
+                if (currentStage < stages.length) {
+                    const stage = stages[currentStage];
+                    updateProgress(stage.progress, stage.status);
+                    currentStage++;
+                } else {
+                    clearInterval(progressInterval);
+                }
+            }, 1000);
+        }
+
+        function stopProgressSimulation() {
+            clearInterval(progressInterval);
+            updateProgress(100, 'Processing complete!');
+            setTimeout(() => {
+                const loading = document.querySelector('.loading');
+                loading.style.display = 'none';
+            }, 1000);
+        }
+
+        // These functions need to be globally accessible
+        function editModelResults(elementId, modelType) {
+            const element = document.getElementById(elementId);
+            const data = JSON.parse(element.textContent);
+            const container = element.parentElement;
+            const extractedText = document.getElementById('extractedText').textContent;
+            
+            // Check if an edit form already exists and remove it
+            const existingForm = container.querySelector('.edit-form');
+            if (existingForm) {
+                existingForm.remove();
+                element.style.display = 'block';
+                return;
+            }
+            
+            // Create form for editing
+            const form = document.createElement('div');
+            form.className = 'edit-form';
+            
+            // Create input fields for each data property
+            Object.entries(data).forEach(([key, value]) => {
+                const fieldContainer = document.createElement('div');
+                fieldContainer.className = 'mb-3';
+                
+                const label = document.createElement('label');
+                label.className = 'form-label';
+                label.textContent = key.replace(/_/g, ' ').toUpperCase();
+                
+                // Create input group container
+                const inputGroup = document.createElement('div');
+                inputGroup.className = 'input-group';
+                
+                // Create input field
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'form-control editable-field';
+                input.value = value || '';
+                input.dataset.field = key;
+                input.placeholder = `Enter value for ${key.replace(/_/g, ' ').toUpperCase()}`;
+                input.title = `Edit field: ${key.replace(/_/g, ' ').toUpperCase()}`;
+                
+                // Create dropdown button
+                const dropdownButton = document.createElement('button');
+                dropdownButton.className = 'btn btn-outline-secondary dropdown-toggle';
+                dropdownButton.type = 'button';
+                dropdownButton.setAttribute('data-bs-toggle', 'dropdown');
+                dropdownButton.setAttribute('aria-expanded', 'false');
+                dropdownButton.title = 'View extracted text options';
+                
+                // Create dropdown menu
+                const dropdownMenu = document.createElement('ul');
+                dropdownMenu.className = 'dropdown-menu dropdown-menu-end';
+
+                // Add search input
+                const searchContainer = document.createElement('div');
+                searchContainer.className = 'dropdown-search';
+                const searchInput = document.createElement('input');
+                searchInput.type = 'text';
+                searchInput.className = 'form-control';
+                searchInput.placeholder = 'Search';
+                searchContainer.appendChild(searchInput);
+                
+                // Add help text
+                const helpText = document.createElement('div');
+                helpText.className = 'dropdown-search-help';
+                helpText.innerHTML = '<strong>Wildcard Search:</strong> Use <code>*</code> for any characters, <code>?</code> for single character';
+                searchContainer.appendChild(helpText);
+                
+                dropdownMenu.appendChild(searchContainer);
+
+                // --- Collect all possible options for this field ---
+                const optionsSet = new Set();
+                if (value) optionsSet.add(value);
+                // Add all model results for this field
+                if (window.modelResults) {
+                    ['spacy_regex_model', 'training_data_model', 'combined_model'].forEach(modelType => {
+                        const modelVal = window.modelResults[modelType]?.[key];
+                        if (modelVal && typeof modelVal === 'string') optionsSet.add(modelVal);
+                    });
+                }
+                // Add all unique lines from extracted text
+                const lines = extractedText.split('\n');
+                lines.forEach(line => {
+                    const trimmed = line.trim();
+                    if (trimmed) optionsSet.add(trimmed);
+                });
+                // Categorize matches by length
+                const matchesByLength = { short: [], medium: [], long: [] };
+                optionsSet.forEach(opt => {
+                    if (opt.length <= 20) matchesByLength.short.push(opt);
+                    else if (opt.length <= 50) matchesByLength.medium.push(opt);
+                    else matchesByLength.long.push(opt);
+                });
+                // --- End collect options ---
+
+                // Add original value as first option (if present)
+                if (value) {
+                    const originalGroup = document.createElement('div');
+                    originalGroup.className = 'dropdown-group';
+                    const originalHeader = document.createElement('div');
+                    originalHeader.className = 'dropdown-group-header';
+                    originalHeader.textContent = 'Current Value';
+                    originalGroup.appendChild(originalHeader);
+
+                    const originalItem = document.createElement('li');
+                    const originalLink = document.createElement('a');
+                    originalLink.className = 'dropdown-item active';
+                    originalLink.href = '#';
+                    originalLink.innerHTML = `${value}<span class="text-muted">Current selection</span>`;
+                    originalLink.onclick = (e) => {
+                        e.preventDefault();
+                        input.value = value;
+                        updateActiveItem(originalLink);
+                    };
+                    originalItem.appendChild(originalLink);
+                    originalGroup.appendChild(originalItem);
+                    dropdownMenu.appendChild(originalGroup);
+                }
+
+                // Add potential matches to dropdown in groups
+                const addMatchesGroup = (matches, title) => {
+                    if (matches.length > 0) {
+                        const group = document.createElement('div');
+                        group.className = 'dropdown-group';
+                        const header = document.createElement('div');
+                        header.className = 'dropdown-group-header';
+                        header.textContent = title;
+                        group.appendChild(header);
+
+                        matches.forEach(match => {
+                            // Avoid duplicating the current value
+                            if (value && match === value) return;
+                            const item = document.createElement('li');
+                            const link = document.createElement('a');
+                            link.className = 'dropdown-item';
+                            link.href = '#';
+                            link.textContent = match;
+                            link.onclick = (e) => {
+                                e.preventDefault();
+                                input.value = match;
+                                updateActiveItem(link);
+                            };
+                            item.appendChild(link);
+                            group.appendChild(item);
+                        });
+                        dropdownMenu.appendChild(group);
+                    }
+                };
+
+                addMatchesGroup(matchesByLength.short, 'Short Text (1-20 chars)');
+                addMatchesGroup(matchesByLength.medium, 'Medium Text (21-50 chars)');
+                addMatchesGroup(matchesByLength.long, 'Long Text (51+ chars)');
+
+                // Add search functionality with wildcard support
+                searchInput.addEventListener('input', (e) => {
+                    const searchTerm = e.target.value.toLowerCase();
+                    const items = dropdownMenu.querySelectorAll('.dropdown-item');
+                    
+                    // If search is empty, reset all items
+                    if (!searchTerm) {
+                        items.forEach(item => {
+                            item.style.display = '';
+                            // Restore original text without highlighting
+                            const link = item.querySelector('a');
+                            if (link) {
+                                link.innerHTML = link.textContent;
+                            }
+                        });
+                        
+                        // Show all groups
+                        dropdownMenu.querySelectorAll('.dropdown-group').forEach(group => {
+                            group.style.display = '';
+                        });
+                        return;
+                    }
+                    
+                    // Convert wildcard pattern to regex
+                    const wildcardToRegex = (pattern) => {
+                        // Escape regex special characters except * and ?
+                        const escaped = pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                        // Convert * to .* and ? to .
+                        const wildcardPattern = escaped.replace(/\\\*/g, '.*').replace(/\\\?/g, '.');
+                        return new RegExp(wildcardPattern, 'i');
+                    };
+                    
+                    // Check if search term contains wildcards
+                    const hasWildcards = searchTerm.includes('*') || searchTerm.includes('?');
+                    let regex;
+                    
+                    if (hasWildcards) {
+                        try {
+                            regex = wildcardToRegex(searchTerm);
+                        } catch (error) {
+                            // If regex creation fails, fall back to simple search
+                            regex = null;
+                        }
+                    }
+                    
+                    items.forEach(item => {
+                        const text = item.textContent.toLowerCase();
+                        const group = item.closest('.dropdown-group');
+                        let matches = false;
+                        let matchIndex = -1;
+                        
+                        if (hasWildcards && regex) {
+                            // Use wildcard regex matching
+                            const match = text.match(regex);
+                            if (match) {
+                                matches = true;
+                                matchIndex = match.index;
+                            }
+                        } else {
+                            // Use simple substring matching
+                            matchIndex = text.indexOf(searchTerm);
+                            matches = matchIndex !== -1;
+                        }
+                        
+                        if (matches) {
+                            item.style.display = '';
+                            group.style.display = '';
+                            
+                            // Highlight matching text if it's a simple search (not wildcard)
+                            if (!hasWildcards && searchTerm) {
+                                const originalText = item.textContent;
+                                const highlightedText = originalText.replace(
+                                    new RegExp(`(${searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'),
+                                    '<mark style="background-color: #fff3cd; padding: 0.1rem 0.2rem; border-radius: 0.2rem;">$1</mark>'
+                                );
+                                item.innerHTML = highlightedText;
+                            } else if (hasWildcards) {
+                                // For wildcard searches, restore original text
+                                const link = item.querySelector('a');
+                                if (link) {
+                                    link.innerHTML = link.textContent;
+                                }
+                            }
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+
+                    // Hide empty groups
+                    dropdownMenu.querySelectorAll('.dropdown-group').forEach(group => {
+                        const visibleItems = group.querySelectorAll('.dropdown-item[style=""]').length;
+                        group.style.display = visibleItems > 0 ? '' : 'none';
+                    });
+                });
+
+                function updateActiveItem(clickedItem) {
+                    dropdownMenu.querySelectorAll('.dropdown-item').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                    clickedItem.classList.add('active');
+                }
+                
+                // Append elements to input group
+                inputGroup.appendChild(input);
+                inputGroup.appendChild(dropdownButton);
+                inputGroup.appendChild(dropdownMenu);
+                
+                fieldContainer.appendChild(label);
+                fieldContainer.appendChild(inputGroup);
+                form.appendChild(fieldContainer);
+            });
+            
+            // Create save and cancel buttons
+            const buttonContainer = document.createElement('div');
+            buttonContainer.className = 'edit-buttons show mt-3';
+            
+            const saveButton = document.createElement('button');
+            saveButton.className = 'btn btn-success';
+            saveButton.innerHTML = '<i class="fas fa-save"></i> Save';
+            saveButton.onclick = () => saveFieldEdit(elementId, modelType, form);
+            saveButton.title = 'Save changes';
+            
+            const cancelButton = document.createElement('button');
+            cancelButton.className = 'btn btn-secondary';
+            cancelButton.innerHTML = '<i class="fas fa-times"></i> Cancel';
+            cancelButton.onclick = () => cancelFieldEdit(elementId, data);
+            cancelButton.title = 'Cancel editing';
+            
+            buttonContainer.appendChild(saveButton);
+            buttonContainer.appendChild(cancelButton);
+            form.appendChild(buttonContainer);
+            
+            // Replace the pre element with the form
+            element.style.display = 'none';
+            container.appendChild(form);
+        }
+
+        async function saveFieldEdit(elementId, modelType, form) {
+            const inputs = form.querySelectorAll('.editable-field');
+            const updatedData = {};
+            
+            inputs.forEach(input => {
+                updatedData[input.dataset.field] = input.value;
+            });
+            
+            // Include the invoice ID in the data sent to the backend
+            const payload = {
+                invoice_id: currentInvoiceId,
+                model_type: modelType,
+                field_updates: updatedData
+            };
+
+            try {
+                // Log the payload being sent
+                console.log("Sending update payload:", JSON.stringify(payload, null, 2));
+
+                const response = await fetch('/edit-model-results/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                
+                // Update the display
+                const element = document.getElementById(elementId);
+                element.textContent = JSON.stringify(updatedData, null, 2);
+                element.style.display = 'block';
+                form.remove();
+                
+                // Show success message
+                alert('Changes saved successfully!');
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error saving changes. Please try again.');
+            }
+        }
+
+        function cancelFieldEdit(elementId, originalData) {
+            const element = document.getElementById(elementId);
+            const form = element.parentElement.querySelector('.edit-form');
+            
+            element.textContent = JSON.stringify(originalData, null, 2);
+            element.style.display = 'block';
+            form.remove();
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('uploadForm');
+            const loading = document.querySelector('.loading');
+            const resultContainer = document.getElementById('resultContainer');
+            const spacyRegexResult = document.getElementById('spacyRegexResult');
+            const trainingDataResult = document.getElementById('trainingDataResult');
+            const combinedResult = document.getElementById('combinedResult');
+            const extractedText = document.getElementById('extractedText');
+            const previewImage = document.getElementById('previewImage');
+            const previewPdf = document.getElementById('previewPdf');
+            const noPreview = document.getElementById('noPreview');
+
+            // Drag and drop functionality
+            const dragDropArea = document.getElementById('dragDropArea');
+            const fileInput = document.getElementById('invoiceFile');
+
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dragDropArea.addEventListener(eventName, preventDefaults, false);
+            });
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dragDropArea.addEventListener(eventName, highlight, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dragDropArea.addEventListener(eventName, unhighlight, false);
+            });
+
+            function highlight(e) {
+                dragDropArea.classList.add('bg-light');
+            }
+
+            function unhighlight(e) {
+                dragDropArea.classList.remove('bg-light');
+            }
+
+            dragDropArea.addEventListener('drop', handleDrop, false);
+
+            // Function to handle file preview
+            function handleFilePreview(file) {
+                const fileType = file.type;
+                const fileUrl = URL.createObjectURL(file);
+                
+                // Hide all preview elements
+                previewImage.style.display = 'none';
+                previewPdf.style.display = 'none';
+                noPreview.style.display = 'none';
+                
+                if (fileType.startsWith('image/')) {
+                    // Show image preview
+                    previewImage.src = fileUrl;
+                    previewImage.style.display = 'block';
+                } else if (fileType === 'application/pdf') {
+                    // Show PDF preview
+                    previewPdf.src = fileUrl;
+                    previewPdf.style.display = 'block';
+                } else {
+                    // Show no preview message
+                    noPreview.style.display = 'block';
+                }
+            }
+
+            // Add file input change handler
+            document.getElementById('invoiceFile').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    handleFilePreview(file);
+                }
+            });
+
+            // Modify the drop handler to show preview
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                fileInput.files = files;
+                if (files[0]) {
+                    handleFilePreview(files[0]);
+                }
+            }
+
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData();
+                const file = document.getElementById('invoiceFile').files[0];
+                
+                if (!file) {
+                    alert('Please select a file first.');
+                    return;
+                }
+                
+                formData.append('file', file);
+                
+                const loading = document.querySelector('.loading');
+                loading.style.display = 'block';
+                resultContainer.style.display = 'none';
+                
+                // Start progress simulation
+                startProgressSimulation();
+                
+                try {
+                    const response = await fetch('/process-invoice/', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    
+                    // Stop progress simulation and show completion
+                    stopProgressSimulation();
+                    
+                    // Store the invoice ID
+                    currentInvoiceId = data.invoice_id;
+                    console.info("Stored invoice ID: " + currentInvoiceId);
+
+                    // Sort the results to ensure consistent order
+                    const sortOrder = [
+                        'document_code',
+                        'invoice_date_time',
+                        'supplier_name',
+                        'supplier_tin',
+                        'supplier_address',
+                        'buyer_name',
+                        'buyer_tin',
+                        'buyer_address'
+                    ];
+
+                    // Function to sort object by keys
+                    function sortObjectByKeys(obj, keyOrder) {
+                        return keyOrder.reduce((acc, key) => {
+                            if (key in obj) {
+                                acc[key] = obj[key];
+                            }
+                            return acc;
+                        }, {});
+                    }
+
+                    // Sort results for each model
+                    const sortedSpacyRegex = sortObjectByKeys(data.results.spacy_regex_model, sortOrder);
+                    const sortedTrainingData = sortObjectByKeys(data.results.training_data_model, sortOrder);
+                    const sortedCombined = sortObjectByKeys(data.results.combined_model, sortOrder);
+
+                    // Store model results globally for dropdown access
+                    window.modelResults = {
+                        spacy_regex_model: sortedSpacyRegex,
+                        training_data_model: sortedTrainingData,
+                        combined_model: sortedCombined
+                    };
+
+                    // Display results from all three models
+                    spacyRegexResult.textContent = JSON.stringify(sortedSpacyRegex, null, 2);
+                    trainingDataResult.textContent = JSON.stringify(sortedTrainingData, null, 2);
+                    combinedResult.textContent = JSON.stringify(sortedCombined, null, 2);
+                    extractedText.textContent = data.extracted_text;
+                    
+                    resultContainer.style.display = 'block';
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('An error occurred while processing the invoice. Please try again.');
+                }
+            });
+
+            // Add download functions
+            window.downloadExcel = function(elementId, filename) {
+                const element = document.getElementById(elementId);
+                const data = JSON.parse(element.textContent);
+                const ws = XLSX.utils.json_to_sheet([data]);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Data");
+                XLSX.writeFile(wb, `${filename}_${new Date().toISOString().slice(0,19).replace(/[:]/g, '')}.xlsx`);
+            };
+
+            window.downloadText = function(elementId, filename) {
+                const element = document.getElementById(elementId);
+                const text = element.textContent;
+                const blob = new Blob([text], { type: 'text/plain' });
+                const link = document.createElement("a");
+                const url = URL.createObjectURL(blob);
+                link.setAttribute("href", url);
+                link.setAttribute("download", `${filename}_${new Date().toISOString().slice(0,19).replace(/[:]/g, '')}.txt`);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            };
+        });
+    </script>
+    <!-- Add SheetJS library for Excel export -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>
+</body>
+</html> 
