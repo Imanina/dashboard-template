@@ -1,0 +1,7 @@
+{
+  "style": "default",
+  "rsc": false,
+  "tsx": true,
+  "app": false,
+  "tailwind": "tailwind.config.js"
+}
