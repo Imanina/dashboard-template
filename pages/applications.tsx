@@ -1,18 +1,25 @@
-import { useMemo } from "react"
-import { PageShell } from "../components/PageShell"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "../components/ui/card"
-import { Button } from "../components/ui/button"
-import { getNextStatus, getStepLabel, ROLE_STEP_ACCESS } from "../lib/application-flow"
-import { useApplicationStore } from "../lib/application-store"
 import { useAuth } from "../lib/auth-context"
-import { useRouter } from "next/router"
+import { PemohonView } from "../components/applications/PemohonView"
+import { PegawaiOperasiView } from "../components/applications/PegawaiOperasiView"
+import { SpsbView } from "../components/applications/SpsbView"
+import { PengurusBesarView } from "../components/applications/PengurusBesarView"
+import { KewanganView } from "../components/applications/KewanganView"
+import { JkdmView } from "../components/applications/JkdmView"
+
+export default function ApplicationsPage() {
+  const { role } = useAuth()
+
+  if (role === "Pemohon") return <PemohonView />
+  if (role === "LPPS Pegawai Operasi") return <PegawaiOperasiView />
+  if (role === "SPSB") return <SpsbView />
+  if (role === "LPPS Pengurus Besar") return <PengurusBesarView />
+  if (role === "LPPS Kewangan") return <KewanganView />
+  if (role === "JKDM") return <JkdmView />
+
+  return <PemohonView />
+}
+
+/* LEGACY VIEW BELOW
 
 export default function ApplicationsPage() {
   const router = useRouter()
@@ -415,3 +422,4 @@ export default function ApplicationsPage() {
     </PageShell>
   )
 }
+*/
