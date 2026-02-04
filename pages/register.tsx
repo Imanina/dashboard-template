@@ -2,32 +2,36 @@ import React, { useState } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import dnexLogo from "../components/ui/dnex-logo.svg";
-import { useAuth } from "../lib/auth-context";
+import { supabase } from "../lib/supabase";
 
-export default function Login() {
+export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const { signIn } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
+    setSuccess("");
 
     try {
-      const { error } = await signIn(email, password);
-      
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+
       if (error) {
         setError(error.message);
       } else {
-        // Successful login - redirect to dashboard
-        router.push("/dashboard");
+        setSuccess("Account created. You can now sign in.");
+        setTimeout(() => router.push("/login"), 1000);
       }
-    } catch (err) {
+    } catch (_err) {
       setError("An unexpected error occurred. Please try again.");
     } finally {
       setLoading(false);
@@ -66,13 +70,13 @@ export default function Login() {
           style={{ fontSize: 24, fontWeight: 700, marginBottom: 8, textAlign: "center" }}
           className="dark:text-black-100"
         >
-          Sign In
+          Register
         </h2>
         <div
           style={{ fontSize: 14, color: "#6b7280", marginBottom: 24, textAlign: "center" }}
           className="dark:text-gray-400"
         >
-          Enter your credentials to access your account
+          Create a new account
         </div>
         <div style={{ marginBottom: 16 }}>
           <label htmlFor="email" style={{ display: "block", marginBottom: 4, fontWeight: 600 }} className="dark:font-bold">Email</label>
@@ -93,18 +97,17 @@ export default function Login() {
         <div style={{ marginBottom: 16 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
             <label htmlFor="password" style={{ fontWeight: 600 }} className="dark:font-bold">Password</label>
-            {/* <a href="#" style={{ fontSize: 15, color: "#000000", cursor: "pointer" }} className="ml-auto inline-block text-sm underline-offset-4 hover:underline">Forgot Password?</a> */}
           </div>
           <div style={{ position: "relative" }}>
             <input
               id="password"
               name="password"
               type={showPassword ? "text" : "password"}
-              autoComplete="current-password"
+              autoComplete="new-password"
               required
               value={password}
               onChange={e => setPassword(e.target.value)}
-              placeholder="Enter your password"
+              placeholder="Create a password"
               disabled={loading}
               style={{ width: "100%", padding: 8, borderRadius: 4, border: "1px solid #d1d5db", background: "white" }}
               className="dark:bg-white dark:text-gray-900 dark:border-gray-700"
@@ -128,38 +131,37 @@ export default function Login() {
               aria-label={showPassword ? "Hide password" : "Show password"}
             >
               {showPassword ? (
-                // Eye-off SVG
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-5 0-9-4-9-7 0-1.306.835-2.417 2.22-3.293m3.34-1.612A5.978 5.978 0 0112 7c3.314 0 6 2.686 6 6 0 1.306-.835 2.417-2.22 3.293M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
               ) : (
-                // Eye SVG
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
               )}
             </button>
           </div>
         </div>
         {error && <div style={{ color: "#dc2626", marginBottom: 16, fontSize: 14 }}>{error}</div>}
+        {success && <div style={{ color: "#16a34a", marginBottom: 16, fontSize: 14 }}>{success}</div>}
         <button
           type="submit"
           disabled={loading}
-          style={{ 
-            width: "100%", 
-            padding: 10, 
-            borderRadius: 4, 
-            background: loading ? "#6b7280" : "#111827", 
-            color: "white", 
-            fontWeight: 600, 
+          style={{
+            width: "100%",
+            padding: 10,
+            borderRadius: 4,
+            background: loading ? "#6b7280" : "#111827",
+            color: "white",
+            fontWeight: 600,
             border: "none",
             cursor: loading ? "not-allowed" : "pointer"
           }}
           className="dark:bg-gray-700 dark:text-gray-100"
         >
-          {loading ? "Signing In..." : "Sign In"}
+          {loading ? "Creating..." : "Create Account"}
         </button>
         <div style={{ textAlign: "center", marginTop: 16, fontSize: 15 }}>
-          Don't have an account?{" "}
-          <a href="/register" style={{ color: "#000000", textDecoration: "underline", cursor: "pointer" }} className="dark:text-blue-400">Sign Up</a>
+          Already have an account?{" "}
+          <a href="/login" style={{ color: "#000000", textDecoration: "underline", cursor: "pointer" }} className="dark:text-blue-400">Sign In</a>
         </div>
       </form>
     </div>
   );
-} 
+}

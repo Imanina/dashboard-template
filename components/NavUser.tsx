@@ -35,7 +35,7 @@ import { useAuth } from "../lib/auth-context"
 export function NavUser() {
   const { isMobile } = useSidebar ? useSidebar() : { isMobile: false }
   const router = useRouter()
-  const { user, signOut } = useAuth()
+  const { user, signOut, role } = useAuth()
 
   async function handleLogout() {
     await signOut()
@@ -66,6 +66,7 @@ export function NavUser() {
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">{userName}</span>
                   <span className="truncate text-xs">{userEmail}</span>
+                  <span className="truncate text-xs text-muted-foreground">{role}</span>
                 </div>
                 <ChevronsUpDown className="size-4" />
               </div>
@@ -86,6 +87,7 @@ export function NavUser() {
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">{userName}</span>
                   <span className="truncate text-xs">{userEmail}</span>
+                  <span className="truncate text-xs text-muted-foreground">{role}</span>
                 </div>
               </div>
             </DropdownMenuLabel>

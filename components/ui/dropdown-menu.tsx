@@ -7,9 +7,37 @@ const DropdownMenuContext = React.createContext<{
 
 export function DropdownMenu({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = React.useState(false);
+  const containerRef = React.useRef<HTMLDivElement | null>(null);
+
+  React.useEffect(() => {
+    if (!open) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+      if (containerRef.current && !containerRef.current.contains(target)) {
+        setOpen(false);
+      }
+    };
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEscape);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [open]);
+
   return (
     <DropdownMenuContext.Provider value={{ open, setOpen }}>
-      <div className="relative">{children}</div>
+      <div className="relative" ref={containerRef}>
+        {children}
+      </div>
     </DropdownMenuContext.Provider>
   );
 }

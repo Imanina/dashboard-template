@@ -10,14 +10,17 @@ import {
   Lock,
   MapPinned,
   MessageSquare,
+  UserCircle,
   ShieldCheck,
   Users,
   FileText,
   BarChart3,
+  User,
 } from "lucide-react"
 
 import { NavMain } from "../components/NavMain"
 import { NavUser } from "../components/NavUser"
+import lppsLogo from "../components/ui/lpps-logo.png"
 import {
   Sidebar,
   SidebarContent,
@@ -28,6 +31,8 @@ import {
   SidebarMenuItem,
 } from "../components/ui/sidebar"
 import { ModeToggle } from "../components/ModeToggle"
+import { useAuth } from "../lib/auth-context"
+import { DEFAULT_ROLE, isRouteAllowed } from "../lib/role-access"
 
 const data = {
   navMain: [
@@ -103,12 +108,22 @@ const data = {
       icon: MapPinned,
       items: [],
     },
+    {
+      title: "Profile",
+      url: "/profile",
+      icon: UserCircle,
+      items: [],
+    },
   ],
   navSecondary: [],
   projects: [],
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { role } = useAuth()
+  const activeRole = role || DEFAULT_ROLE
+  const filteredNavMain = data.navMain.filter((item) => isRouteAllowed(activeRole, item.url))
+
   return (
     <Sidebar
       className="flex h-screen flex-col justify-between border-r bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800"
@@ -119,13 +134,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton size="lg" asChild>
-                <a href="#" className="flex items-center gap-3">
-                  <div className="bg-black text-white flex aspect-square size-8 items-center justify-center rounded-lg">
-                    <LayoutDashboard className="size-4" />
-                  </div>
-                  <div className="flex flex-col text-left text-sm leading-tight">
-                    <span className="truncate font-medium">Dashboard</span>
-                    <span className="truncate text-xs"></span>
+                <a href="#" className="flex w-full items-center justify-center">
+                  <div className="flex aspect-square size-14 items-center justify-center">
+                    <img src={lppsLogo.src} alt="LPPS" className="h-22 w-22 object-contain" />
                   </div>
                 </a>
               </SidebarMenuButton>
@@ -133,7 +144,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarMenu>
         </SidebarHeader>
         <SidebarContent className="py-2">
-          <NavMain items={data.navMain} />
+          <NavMain items={filteredNavMain} />
         </SidebarContent>
       </div>
       <SidebarFooter className="py-5">
