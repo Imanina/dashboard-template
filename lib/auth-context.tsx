@@ -4,12 +4,12 @@ import { supabase } from './supabase'
 import { DEFAULT_ROLE, Role } from './role-access'
 
 const ROLE_BY_EMAIL: Record<string, Role> = {
-  "pemohon.demo123@gmail.com": "Pemohon",
-  "operasi.demo123@gmail.com": "LPPS Pegawai Operasi",
-  "spsb.demo123@gmail.com": "SPSB",
-  "pengurus.demo123@gmail.com": "LPPS Pengurus Besar",
-  "kewangan.demo123@gmail.com": "LPPS Kewangan",
-  "jkdm.demo123@gmail.com": "JKDM",
+  "pemohon@gmail.com": "Pemohon",
+  "operasi@gmail.com": "LPPS Pegawai Operasi",
+  "spsb@gmail.com": "SPSB",
+  "pengurus@gmail.com": "LPPS Pengurus Besar",
+  "kewangan@gmail.com": "LPPS Kewangan",
+  "jkdm@gmail.com": "JKDM",
 }
 
 interface AuthContextType {
