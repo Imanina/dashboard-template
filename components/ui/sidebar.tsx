@@ -64,10 +64,10 @@ export function SidebarMenuItem({ children, className }: { children: React.React
   return <li className={`block ${className || ''}`}>{children}</li>;
 }
 
-export function SidebarMenuButton({ children, asChild, size, tooltip, ...props }: any) {
+export function SidebarMenuButton({ children, asChild, size, tooltip, className, ...props }: any) {
   return (
     <button
-      className={`flex items-center gap-2 px-2 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition text-sm w-full ${size === "lg" ? "h-12" : size === "sm" ? "h-8" : "h-10"}`}
+      className={`flex items-center gap-2 px-2 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition text-sm w-full ${size === "lg" ? "h-12" : size === "sm" ? "h-8" : "h-10"} ${className ?? ""}`}
       title={tooltip}
       {...props}
     >
@@ -95,16 +95,25 @@ export function SidebarMenuSubItem({ children }: { children: React.ReactNode }) 
   return <li>{children}</li>;
 }
 
-export function SidebarMenuSubButton({ children, asChild, ...props }: any) {
+export function SidebarMenuSubButton({ children, asChild, className, ...props }: any) {
   return (
-    <button className="flex items-center gap-2 px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition text-sm w-full" {...props}>
+    <button
+      className={`flex items-center gap-2 px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition text-sm w-full ${className ?? ""}`}
+      {...props}
+    >
       {children}
     </button>
   );
 }
 
-export function SidebarInset({ children }: { children: React.ReactNode }) {
-  return <div className="flex-1 flex flex-col">{children}</div>;
+export function SidebarInset({
+  children,
+  className,
+}: {
+  children: React.ReactNode
+  className?: string
+}) {
+  return <div className={cn("flex-1 flex flex-col", className)}>{children}</div>
 }
 
 export function SidebarTrigger({ className = "", ...props }: any) {

@@ -37,7 +37,11 @@ export function KewanganView() {
                       {app.id} • {getStepLabel(app.status)}
                     </div>
                   </div>
-                  <Button size="sm" onClick={() => handleConfirmPayment(app.id)}>
+                  <Button
+                    size="sm"
+                    onClick={() => handleConfirmPayment(app.id)}
+                    className="hover:bg-slate-900 hover:text-white"
+                  >
                     Confirm Payment
                   </Button>
                 </div>

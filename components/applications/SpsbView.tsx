@@ -37,7 +37,11 @@ export function SpsbView() {
                       {app.id} • {getStepLabel(app.status)}
                     </div>
                   </div>
-                  <Button size="sm" onClick={() => handleVerify(app.id)}>
+                  <Button
+                    size="sm"
+                    onClick={() => handleVerify(app.id)}
+                    className="hover:bg-slate-900 hover:text-white"
+                  >
                     Confirm Check
                   </Button>
                 </div>

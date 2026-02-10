@@ -37,7 +37,11 @@ export function PegawaiOperasiView() {
                       {app.id} • {getStepLabel(app.status)}
                     </div>
                   </div>
-                  <Button size="sm" onClick={() => handleCompleteStep(app.id)}>
+                  <Button
+                    size="sm"
+                    onClick={() => handleCompleteStep(app.id)}
+                    className="hover:bg-slate-900 hover:text-white"
+                  >
                     Mark Complete
                   </Button>
                 </div>

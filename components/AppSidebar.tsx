@@ -126,7 +126,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   return (
     <Sidebar
-      className="flex h-screen flex-col justify-between border-r bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800"
+      className="sticky top-0 flex h-screen flex-col justify-between border-r bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800"
       {...props}
     >
       <div>

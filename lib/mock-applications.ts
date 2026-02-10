@@ -1,13 +1,23 @@
 import { ApplicationStatus } from "./application-flow"
 
+export type ApplicationType =
+  | "New"
+  | "Renewal"
+  | "Private Jetty - New"
+  | "Private Jetty - Renewal"
+  | "Mid-Stream - New"
+  | "Mid-Stream - Renewal"
+
 export interface ApplicationRecord {
   id: string
   applicantName: string
   companyName: string
   submittedAt: string
   status: ApplicationStatus
-  applicationType?: "New" | "Renewal"
+  applicationType?: ApplicationType
   permitNumber?: string
+  details?: Record<string, unknown>
+  documents?: string[]
 }
 
 export const MOCK_APPLICATIONS: ApplicationRecord[] = [

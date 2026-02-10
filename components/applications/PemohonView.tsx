@@ -22,8 +22,17 @@ export function PemohonView() {
       subtitle="Applications and permit payments"
       actions={
         <>
-          <Button onClick={() => router.push("/applications/new")}>New Application</Button>
-          <Button variant="outline" onClick={() => router.push("/applications/renewal")}>
+          <Button
+            onClick={() => router.push("/applications/new")}
+            className="hover:bg-slate-900 hover:text-white"
+          >
+            New Application
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => router.push("/applications/renewal")}
+            className="hover:bg-slate-900 hover:text-white"
+          >
             Renewal Application
           </Button>
         </>

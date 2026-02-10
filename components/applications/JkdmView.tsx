@@ -37,7 +37,11 @@ export function JkdmView() {
                       {app.id} • {getStepLabel(app.status)}
                     </div>
                   </div>
-                  <Button size="sm" onClick={() => handleFinalize(app.id)}>
+                  <Button
+                    size="sm"
+                    onClick={() => handleFinalize(app.id)}
+                    className="hover:bg-slate-900 hover:text-white"
+                  >
                     Finalize
                   </Button>
                 </div>

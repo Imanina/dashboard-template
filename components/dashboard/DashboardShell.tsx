@@ -29,32 +29,49 @@ interface PipelineItem {
 
 interface DashboardShellProps {
   breadcrumbLabel: string
-  summaryCards: SummaryCard[]
-  pipeline: PipelineItem[]
-  notifications: string[]
+  summaryCards?: SummaryCard[]
+  pipeline?: PipelineItem[]
+  notifications?: string[]
   headerActions?: ReactNode
+  pipelineActions?: ReactNode
+  children?: ReactNode
 }
 
 export function DashboardShell({
   breadcrumbLabel,
-  summaryCards,
-  pipeline,
-  notifications,
+  summaryCards = [],
+  pipeline = [],
+  notifications = [],
   headerActions,
+  pipelineActions,
+  children,
 }: DashboardShellProps) {
-  const actions = headerActions ?? (
-    <>
-      <Button variant="outline">Create Application</Button>
-      <Button>Register Customer</Button>
-    </>
-  )
+  const actions =
+    headerActions === undefined ? (
+      <>
+        <Button variant="outline">Create Application</Button>
+        <Button>Register Customer</Button>
+      </>
+    ) : (
+      headerActions
+    )
+
+  const pipelineFooter =
+    pipelineActions === undefined ? (
+      <>
+        <Button variant="outline">Manage Applications</Button>
+        <Button>Assign Staff</Button>
+      </>
+    ) : (
+      pipelineActions
+    )
 
   return (
     <ProtectedRoute>
-      <div className="relative flex min-h-screen overflow-hidden">
+      <div className="relative flex h-screen overflow-hidden">
         <SidebarProvider>
           <AppSidebar />
-          <SidebarInset>
+          <SidebarInset className="h-screen overflow-y-auto">
             <header className="flex h-16 shrink-0 items-center gap-2 border-b">
               <div className="flex flex-1 items-center gap-2 px-4">
                 <SidebarTrigger className="-ml-1" />
@@ -79,70 +96,71 @@ export function DashboardShell({
                 {actions}
               </div>
             </header>
-            <div className="flex flex-1 flex-col gap-6 p-4 pt-0">
-              <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-                {summaryCards.map((card) => (
-                  <Card key={card.title}>
+            {children ?? (
+              <div className="flex flex-1 flex-col gap-6 p-4 pt-0">
+                <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                  {summaryCards.map((card) => (
+                    <Card key={card.title}>
+                      <CardHeader>
+                        <CardDescription>{card.title}</CardDescription>
+                        <CardTitle className="text-3xl">{card.value}</CardTitle>
+                      </CardHeader>
+                      <CardContent className="pt-0">
+                        <p className="text-sm text-muted-foreground">{card.caption}</p>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </section>
+
+                <section className="grid gap-4 lg:grid-cols-3">
+                  <Card className="lg:col-span-2">
                     <CardHeader>
-                      <CardDescription>{card.title}</CardDescription>
-                      <CardTitle className="text-3xl">{card.value}</CardTitle>
+                      <CardTitle>Application Pipeline</CardTitle>
+                      <CardDescription>
+                        Track application status, payment, validation, and approval
+                      </CardDescription>
                     </CardHeader>
-                    <CardContent className="pt-0">
-                      <p className="text-sm text-muted-foreground">{card.caption}</p>
-                    </CardContent>
-                  </Card>
-                ))}
-              </section>
-
-              <section className="grid gap-4 lg:grid-cols-3">
-                <Card className="lg:col-span-2">
-                  <CardHeader>
-                    <CardTitle>Application Pipeline</CardTitle>
-                    <CardDescription>
-                      Track application status, payment, validation, and approval
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="grid gap-4 md:grid-cols-2">
-                    {pipeline.map((item) => (
-                      <div
-                        key={item.status}
-                        className="rounded-lg border bg-muted/30 p-4"
-                      >
-                        <div className="flex items-center justify-between">
-                          <p className="text-sm font-medium">{item.status}</p>
-                          <p className="text-lg font-semibold">{item.count}</p>
+                    <CardContent className="grid gap-4 md:grid-cols-2">
+                      {pipeline.map((item) => (
+                        <div
+                          key={item.status}
+                          className="rounded-lg border bg-muted/30 p-4"
+                        >
+                          <div className="flex items-center justify-between">
+                            <p className="text-sm font-medium">{item.status}</p>
+                            <p className="text-lg font-semibold">{item.count}</p>
+                          </div>
+                          <p className="mt-2 text-xs text-muted-foreground">{item.detail}</p>
                         </div>
-                        <p className="mt-2 text-xs text-muted-foreground">{item.detail}</p>
-                      </div>
-                    ))}
-                  </CardContent>
-                  <CardFooter className="gap-2">
-                    <Button variant="outline">Manage Applications</Button>
-                    <Button>Assign Staff</Button>
-                  </CardFooter>
-                </Card>
+                      ))}
+                    </CardContent>
+                    {pipelineFooter !== null && (
+                      <CardFooter className="gap-2">{pipelineFooter}</CardFooter>
+                    )}
+                  </Card>
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Notifications</CardTitle>
-                    <CardDescription>Push alerts and new requests</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    {notifications.map((note) => (
-                      <div
-                        key={note}
-                        className="rounded-lg border border-dashed px-3 py-2 text-sm"
-                      >
-                        {note}
-                      </div>
-                    ))}
-                  </CardContent>
-                  <CardFooter>
-                    <Button variant="outline">Open Inbox</Button>
-                  </CardFooter>
-                </Card>
-              </section>
-            </div>
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Notifications</CardTitle>
+                      <CardDescription>Push alerts and new requests</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      {notifications.map((note) => (
+                        <div
+                          key={note}
+                          className="rounded-lg border border-dashed px-3 py-2 text-sm"
+                        >
+                          {note}
+                        </div>
+                      ))}
+                    </CardContent>
+                    <CardFooter>
+                      <Button variant="outline">Open Inbox</Button>
+                    </CardFooter>
+                  </Card>
+                </section>
+              </div>
+            )}
           </SidebarInset>
         </SidebarProvider>
       </div>

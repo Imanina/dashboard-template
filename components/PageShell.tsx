@@ -26,10 +26,10 @@ interface PageShellProps {
 export function PageShell({ title, subtitle, actions, children }: PageShellProps) {
   return (
     <ProtectedRoute>
-      <div className="relative flex min-h-screen overflow-hidden">
+      <div className="relative flex h-screen overflow-hidden">
         <SidebarProvider>
           <AppSidebar />
-          <SidebarInset>
+          <SidebarInset className="h-screen overflow-y-auto">
             <header className="flex h-16 shrink-0 items-center gap-2 border-b">
               <div className="flex flex-1 items-center gap-2 px-4">
                 <SidebarTrigger className="-ml-1" />

@@ -37,7 +37,11 @@ export function PengurusBesarView() {
                       {app.id} • {getStepLabel(app.status)}
                     </div>
                   </div>
-                  <Button size="sm" onClick={() => handleApprove(app.id)}>
+                  <Button
+                    size="sm"
+                    onClick={() => handleApprove(app.id)}
+                    className="hover:bg-slate-900 hover:text-white"
+                  >
                     Approve
                   </Button>
                 </div>
